@@ -21,6 +21,17 @@
 #include <limits>
 #include <type_traits>
 
+
+#if defined (__clang__)
+#	define MXLIB_NODISCARD [[nodiscard]]
+#else
+#	define MXLIB_NODISCARD
+#endif
+#define MXLIB_INLINE inline
+#define MXLIB_FUNC_DECL MXLIB_NODISCARD MXLIB_INLINE
+#define MXLIB_CONSTEXPR MXLIB_INLINE static constexpr
+#define MXLIB_STATIC_STRUCT(s) s() = delete;
+
 namespace mxlib
 {
     ////////////////////////
@@ -30,51 +41,51 @@ namespace mxlib
     template<typename T, typename = std::enable_if<std::is_arithmetic_v<T>>>
     struct spec 
     { 
-        inline static constexpr T min = std::numeric_limits<T>::min();
+        MXLIB_CONSTEXPR T min = std::numeric_limits<T>::min();
 
-        inline static constexpr T max = std::numeric_limits<T>::max();
+        MXLIB_CONSTEXPR T max = std::numeric_limits<T>::max();
         
-        spec() = delete;
+        MXLIB_STATIC_STRUCT(spec);
     };
 
     template<>
     struct spec<float>
     { 
-        inline static constexpr  float pi = 3.141593f;
+        MXLIB_CONSTEXPR float pi = 3.141593f;
         
-        inline static constexpr  float epsilon = 0.00001f;
+        MXLIB_CONSTEXPR float epsilon = 0.00001f;
 
-        inline static constexpr  float epsilon_norm_sq = 1e-15f;
+        MXLIB_CONSTEXPR float epsilon_norm_sq = 1e-15f;
 
-        inline static constexpr  float deg_to_rad = 0.01745329f;
+        MXLIB_CONSTEXPR float deg_to_rad = 0.01745329f;
 
-        inline static constexpr  float rad_to_deg = 57.29578f;
+        MXLIB_CONSTEXPR float rad_to_deg = 57.29578f;
 
-        inline static constexpr  float inf  = std::numeric_limits<int>::infinity();
+        MXLIB_CONSTEXPR float inf  = std::numeric_limits<int>::infinity();
 
-        inline static constexpr  float ninf = -std::numeric_limits<float>::infinity();
+        MXLIB_CONSTEXPR float ninf = -std::numeric_limits<float>::infinity();
 
-        spec() = delete;
+        MXLIB_STATIC_STRUCT(spec);
     };
 
     template<>
     struct spec<double>
     { 
-        inline static constexpr double pi = 3.14159265358979323846;
+        MXLIB_CONSTEXPR double pi = 3.14159265358979323846;
 
-        inline static constexpr double epsilon = 0.0000000000001;
+        MXLIB_CONSTEXPR double epsilon = 0.0000000000001;
 
-        inline static constexpr double epsilon_norm_sq = 1e-30;
+        MXLIB_CONSTEXPR double epsilon_norm_sq = 1e-30;
 
-        inline static constexpr double deg_to_rad = 0.017453292519943295;
+        MXLIB_CONSTEXPR double deg_to_rad = 0.017453292519943295;
 
-        inline static constexpr double rad_to_deg = 57.29577951308232;
+        MXLIB_CONSTEXPR double rad_to_deg = 57.29577951308232;
 
-        inline static constexpr double inf  = std::numeric_limits<double>::infinity();
+        MXLIB_CONSTEXPR double inf  = std::numeric_limits<double>::infinity();
 
-        inline static constexpr double ninf = -std::numeric_limits<double>::infinity();
+        MXLIB_CONSTEXPR double ninf = -std::numeric_limits<double>::infinity();
 
-        spec() = delete;
+        MXLIB_STATIC_STRUCT(spec);
     };
 
     ////////////////////////
@@ -82,7 +93,7 @@ namespace mxlib
     ///////////////////////
 
     template<typename T, typename U, typename = std::enable_if_t<sizeof(T) == sizeof(U)>>
-    inline static T reinterpret(U&& src_) {
+    MXLIB_FUNC_DECL static T reinterpret(U&& src_) {
         constexpr auto valid_types = 
             std::is_pointer_v<T> == std::is_pointer_v<U>;
         static_assert(valid_types, "invalid type combination");
@@ -275,70 +286,70 @@ namespace mxlib
     ///////////////////////
 
     template<typename T>
-    xmtx4x4<T> matrix_identity();
+    MXLIB_FUNC_DECL static xmtx4x4<T> matrix_identity();
     
     template<typename T>
-    xmtx4x4<T> matrix_translation(const xvec3<T>& position_);
+    MXLIB_FUNC_DECL static xmtx4x4<T> matrix_translation(const xvec3<T>& position_);
 
     template<typename T>
-    xmtx4x4<T> matrix_scale(const xvec3<T>& scale_);
+    MXLIB_FUNC_DECL static xmtx4x4<T> matrix_scale(const xvec3<T>& scale_);
 
     template<typename T>
-    xmtx4x4<T> matrix_rotation(const xquat<T>& rot_);
+    MXLIB_FUNC_DECL static xmtx4x4<T> matrix_rotation(const xquat<T>& rot_);
 
     template<typename T>
-    xmtx4x4<T> matrix_multiply(xmtx4x4<T> a, xmtx4x4<T> b);
+    MXLIB_FUNC_DECL static xmtx4x4<T> matrix_multiply(xmtx4x4<T> a, xmtx4x4<T> b);
 
     template<typename T>
-    static xmtx4x4<T> compose_model_matrix(const xvec3<T>& position_, const xquat<T>& rotation_, const xvec3<T>& scale_);
+    MXLIB_FUNC_DECL static xmtx4x4<T> compose_model_matrix(const xvec3<T>& position_, const xquat<T>& rotation_, const xvec3<T>& scale_);
 
     template<typename T>
-    static xquat<T> to_quat(const xvec3<T>& euler_);
+    MXLIB_FUNC_DECL static xquat<T> to_quat(const xvec3<T>& euler_);
     
     template<typename T>
-    static xvec3<T> to_euler(const xquat<T>& quat_);
+    MXLIB_FUNC_DECL static xvec3<T> to_euler(const xquat<T>& quat_);
 
     template<typename T>
-    static xvec3<T> transform(const xvec3<T>& vec_, const xmtx4x4<T>& mtx_);
+    MXLIB_FUNC_DECL static xvec3<T> transform(const xvec3<T>& vec_, const xmtx4x4<T>& mtx_);
 
     template<typename T>
-    static T sq_magnitude(const xquat<T>& quat_);
+    MXLIB_FUNC_DECL static T sq_magnitude(const xquat<T>& quat_);
 
     template<typename T>
-    static xquat<T> conjugate(const xquat<T>& quat_);
+    MXLIB_FUNC_DECL static xquat<T> conjugate(const xquat<T>& quat_);
 
     template<typename T>
-    static xquat<T> inverse(const xquat<T>& quat_);
+    MXLIB_FUNC_DECL static xquat<T> inverse(const xquat<T>& quat_);
 
     template<typename T>
-    static xmtx4x4<T> inverse(const xmtx4x4<T>& mtx_);
+    MXLIB_FUNC_DECL static xmtx4x4<T> inverse(const xmtx4x4<T>& mtx_);
 
     template<typename T>
-    static xvec3<T> negate(const xvec3<T>& v0);
+    MXLIB_FUNC_DECL static xvec3<T> negate(const xvec3<T>& v0);
 
     template<typename T>
-    static xvec3<T> multiply(const xvec3<T>& v0, float scalar);
+    MXLIB_FUNC_DECL static xvec3<T> multiply(const xvec3<T>& v0, float scalar);
 
     template<typename T>
-    static xvec3<T> divide(const xvec3<T>& v0, float scalar);
+    MXLIB_FUNC_DECL static xvec3<T> divide(const xvec3<T>& v0, float scalar);
 
     template<typename T>
-    static xvec3<T> add(const xvec3<T>& v0, const xvec3<T>& v1);
+    MXLIB_FUNC_DECL static xvec3<T> add(const xvec3<T>& v0, const xvec3<T>& v1);
 
     template<typename T>
-    static xvec3<T> subtract(const xvec3<T>& v0, const xvec3<T>& v1);
+    MXLIB_FUNC_DECL static xvec3<T> subtract(const xvec3<T>& v0, const xvec3<T>& v1);
 
     template<typename T>
-    static T dot_product(const xvec3<T>& v0, const xvec3<T>& v1);
+    MXLIB_FUNC_DECL static T dot_product(const xvec3<T>& v0, const xvec3<T>& v1);
 
     template<typename T>
-    static xvec3<T> cross_product(const xvec3<T>& v0, const xvec3<T>& v1);
+    MXLIB_FUNC_DECL static xvec3<T> cross_product(const xvec3<T>& v0, const xvec3<T>& v1);
 
     template<typename T>
-    static T mixed_product(const xvec3<T>& v0, const xvec3<T>& v1, const xvec3<T>& v2);
+    MXLIB_FUNC_DECL static T mixed_product(const xvec3<T>& v0, const xvec3<T>& v1, const xvec3<T>& v2);
 
     template<typename T>
-    static xvec3<T> triple_product(const xvec3<T>& v0, const xvec3<T>& v1, const xvec3<T>& v2);
+    MXLIB_FUNC_DECL static xvec3<T> triple_product(const xvec3<T>& v0, const xvec3<T>& v1, const xvec3<T>& v2);
 }
 
 namespace mxlib
@@ -517,7 +528,7 @@ mxlib::xmtx4x4<T> mxlib::matrix_multiply(mxlib::xmtx4x4<T> a, mxlib::xmtx4x4<T> 
 }
 
 template<typename T>
-static mxlib::xmtx4x4<T> mxlib::compose_model_matrix(const xvec3<T>& position_, const xquat<T>& rotation_, const xvec3<T>& scale_)
+mxlib::xmtx4x4<T> mxlib::compose_model_matrix(const xvec3<T>& position_, const xquat<T>& rotation_, const xvec3<T>& scale_)
 {
     xmtx4x4<T> t_mtx  = matrix_translation(position_);
     xmtx4x4<T> r_mtx  = matrix_rotation(rotation_);
@@ -540,7 +551,7 @@ static mxlib::xmtx4x4<T> mxlib::compose_model_matrix(const xvec3<T>& position_, 
 }
 
 template<typename T>
-static mxlib::xquat<T> mxlib::to_quat(const xvec3<T>& euler_)
+mxlib::xquat<T> mxlib::to_quat(const xvec3<T>& euler_)
 {
     mxlib::xquat<T> quat_ = {0};
 
@@ -560,7 +571,7 @@ static mxlib::xquat<T> mxlib::to_quat(const xvec3<T>& euler_)
 }
 
 template<typename T>
-static mxlib::xvec3<T> mxlib::to_euler(const xquat<T>& quat_)
+mxlib::xvec3<T> mxlib::to_euler(const xquat<T>& quat_)
 {
     mxlib::xvec3<T> euler_{};
 
@@ -581,7 +592,7 @@ static mxlib::xvec3<T> mxlib::to_euler(const xquat<T>& quat_)
 }
 
 template<typename T>
-static mxlib::xvec3<T> mxlib::transform(const mxlib::xvec3<T>& vec_, const mxlib::xmtx4x4<T>& mtx_)
+mxlib::xvec3<T> mxlib::transform(const mxlib::xvec3<T>& vec_, const mxlib::xmtx4x4<T>& mtx_)
 {
     T w = mtx_[12] * vec_[0] + mtx_[13] * vec_[1] + mtx_[14] * vec_[2] + mtx_[15];
     return {
@@ -592,19 +603,19 @@ static mxlib::xvec3<T> mxlib::transform(const mxlib::xvec3<T>& vec_, const mxlib
 }
 
 template<typename T>
-static T mxlib::sq_magnitude(const xquat<T>& quat_) 
+T mxlib::sq_magnitude(const xquat<T>& quat_) 
 {
     return quat_[0]*quat_[0] + quat_[1]*quat_[1] + quat_[2]*quat_[2] + quat_[3]*quat_[3];
 }
 
 template<typename T>
-static mxlib::xquat<T> mxlib::conjugate(const xquat<T>& quat_) 
+mxlib::xquat<T> mxlib::conjugate(const xquat<T>& quat_) 
 {
     return {-quat_[0], -quat_[1], -quat_[2], quat_[3]};
 }
 
 template<typename T>
-static mxlib::xquat<T> mxlib::inverse(const xquat<T>& quat_) 
+mxlib::xquat<T> mxlib::inverse(const xquat<T>& quat_) 
 {
     auto sq_mag = sq_magnitude(quat_);
     assert(sq_mag != 0);
@@ -612,7 +623,7 @@ static mxlib::xquat<T> mxlib::inverse(const xquat<T>& quat_)
 }
 
 template<typename T>
-static mxlib::xmtx4x4<T> mxlib::inverse(const xmtx4x4<T>& mtx_)
+mxlib::xmtx4x4<T> mxlib::inverse(const xmtx4x4<T>& mtx_)
 {
     float a00 = mtx_[0],  a01 = mtx_[1],  a02 = mtx_[2],  a03 = mtx_[3];
     float a10 = mtx_[4],  a11 = mtx_[5],  a12 = mtx_[6],  a13 = mtx_[7];
@@ -658,12 +669,12 @@ static mxlib::xmtx4x4<T> mxlib::inverse(const xmtx4x4<T>& mtx_)
 }
 
 template<typename T>
-static mxlib::xvec3<T> mxlib::negate(const xvec3<T>& v0) {
+mxlib::xvec3<T> mxlib::negate(const xvec3<T>& v0) {
     return {-v0[0], -v0[1], -v0[2]}; 
 }
 
 template<typename T>
-static mxlib::xvec3<T> mxlib::multiply(const xvec3<T>& v0, float scalar) {
+mxlib::xvec3<T> mxlib::multiply(const xvec3<T>& v0, float scalar) {
     return {
         v0[0]*scalar,
         v0[1]*scalar,
@@ -672,7 +683,7 @@ static mxlib::xvec3<T> mxlib::multiply(const xvec3<T>& v0, float scalar) {
 }
 
 template<typename T>
-static mxlib::xvec3<T> mxlib::divide(const xvec3<T>& v0, float scalar) {
+mxlib::xvec3<T> mxlib::divide(const xvec3<T>& v0, float scalar) {
     return {
         v0[0]/scalar,
         v0[1]/scalar,
@@ -681,7 +692,7 @@ static mxlib::xvec3<T> mxlib::divide(const xvec3<T>& v0, float scalar) {
 }
 
 template<typename T>
-static mxlib::xvec3<T> mxlib::add(const xvec3<T>& v0, const xvec3<T>& v1) {
+mxlib::xvec3<T> mxlib::add(const xvec3<T>& v0, const xvec3<T>& v1) {
     return {
         v0[0]+v1[0],
         v0[1]+v1[1],
@@ -690,7 +701,7 @@ static mxlib::xvec3<T> mxlib::add(const xvec3<T>& v0, const xvec3<T>& v1) {
 }
 
 template<typename T>
-static mxlib::xvec3<T> mxlib::subtract(const xvec3<T>& v0, const xvec3<T>& v1) {
+mxlib::xvec3<T> mxlib::subtract(const xvec3<T>& v0, const xvec3<T>& v1) {
     return {
         v0[0]-v1[0],
         v0[1]-v1[1],
@@ -699,12 +710,12 @@ static mxlib::xvec3<T> mxlib::subtract(const xvec3<T>& v0, const xvec3<T>& v1) {
 }
 
 template<typename T>
-static T mxlib::dot_product(const xvec3<T>& v0, const xvec3<T>& v1) {
+T mxlib::dot_product(const xvec3<T>& v0, const xvec3<T>& v1) {
     return v0[0]*v1[0] + v0[1]*v1[1] + v0[2]*v1[2]; 
 }
 
 template<typename T>
-static mxlib::xvec3<T> mxlib::cross_product(const xvec3<T>& v0, const xvec3<T>& v1) {
+mxlib::xvec3<T> mxlib::cross_product(const xvec3<T>& v0, const xvec3<T>& v1) {
     return {
         v0[1]*v1[2] - v0[2]*v1[1],
         v0[2]*v1[0] - v0[0]*v1[2],
@@ -713,11 +724,11 @@ static mxlib::xvec3<T> mxlib::cross_product(const xvec3<T>& v0, const xvec3<T>& 
 }
 
 template<typename T>
-static T mxlib::mixed_product(const xvec3<T>& v0, const xvec3<T>& v1, const xvec3<T>& v2) {
+T mxlib::mixed_product(const xvec3<T>& v0, const xvec3<T>& v1, const xvec3<T>& v2) {
     return dot_product<T>(cross_product<T>(v0, v1), v2);
 }
 
 template<typename T>
-static mxlib::xvec3<T> mxlib::triple_product(const xvec3<T>& v0, const xvec3<T>& v1, const xvec3<T>& v2) {
+mxlib::xvec3<T> mxlib::triple_product(const xvec3<T>& v0, const xvec3<T>& v1, const xvec3<T>& v2) {
     return cross_product<T>(cross_product<T>(v0, v1), v2);
 }
