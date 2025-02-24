@@ -1,6 +1,6 @@
 # mxlib
 
-a single-header, multi-platform C++ 3D math library with some utility functions and data structures, which I feature in tutorial posts on my blog [https://severisuominen.github.io/](https://severisuominen.github.io/). New features are added on demand, and for now, the library remains fairly incomplete. More coherent updates may be released in the future.
+a single-header, multi-platform C++ 3D math library with some utility functions and data structures, which I feature in tutorial posts on my blog [https://s2cpp.severisuominen.dev/](https://s2cpp.severisuominen.dev/). New features are added on demand, and for now, the library remains fairly incomplete. More coherent updates may be released in the future.
 
 This library heavily focuses on computational geometry and related algorithms, and one of its future goals is to support fixed-point arithmetic in addition to floating-point arithmetic.
 
