@@ -420,12 +420,12 @@ namespace mxlib
             return *this;
         }
 
-        T& operator[](int i) {
+        T& operator[](uint32_t i) {
             assert(i < _size);
             return _array[i];
         }
 
-        const T& operator[](int i) const { 
+        const T& operator[](uint32_t i) const { 
             assert(i < _size); 
             return _array[i]; 
         }
