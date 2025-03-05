@@ -60,7 +60,7 @@ namespace mxlib
 
         MXLIB_CONSTEXPR float rad_to_deg = 57.29578f;
 
-        MXLIB_CONSTEXPR float inf  = std::numeric_limits<int>::infinity();
+        MXLIB_CONSTEXPR float inf  = std::numeric_limits<float>::infinity();
 
         MXLIB_CONSTEXPR float ninf = -std::numeric_limits<float>::infinity();
 
