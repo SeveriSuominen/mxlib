@@ -21,7 +21,6 @@
 #include <limits>
 #include <type_traits>
 
-
 #if defined (__clang__)
 #	define MXLIB_NODISCARD [[nodiscard]]
 #else
@@ -282,6 +281,34 @@ namespace mxlib
     using xbool2 = vector_t<bool, 2>;
 
     ////////////////////////
+    // binary
+    ///////////////////////
+
+    template<typename T, typename = std::enable_if_t<
+    std::is_unsigned_v<T> ||
+    std::is_enum_v<T> && 
+    std::is_unsigned_v<std::underlying_type_t<T>>>>
+    MXLIB_FUNC_DECL static bool any(T bitmask);
+
+    template<typename T, typename = std::enable_if_t<
+    std::is_unsigned_v<T> ||
+    std::is_enum_v<T> && 
+    std::is_unsigned_v<std::underlying_type_t<T>>>>
+    MXLIB_FUNC_DECL static bool all(T bitmask);
+
+    template<typename T, typename = std::enable_if_t<
+    std::is_unsigned_v<T> ||
+    std::is_enum_v<T> && 
+    std::is_unsigned_v<std::underlying_type_t<T>>>>
+    MXLIB_FUNC_DECL static bool contains(T mask_a, T mask_b);
+
+    template<typename T, typename = std::enable_if_t<
+    std::is_unsigned_v<T> ||
+    std::is_enum_v<T> && 
+    std::is_unsigned_v<std::underlying_type_t<T>>>>
+    MXLIB_FUNC_DECL static T combine(T mask_a, T mask_b);
+ 
+    ////////////////////////
     // math functions
     ///////////////////////
 
@@ -354,19 +381,19 @@ namespace mxlib
 
 namespace mxlib
 {
-    template<typename T, uint32_t Max_Size>
+    template<typename T, uint32_t N>
     struct fixed_list
     {
         using value_type = T;
 
         constexpr uint32_t max_size() const {
-            return Max_Size;
+            return N;
         }
 
         fixed_list() = default;
 
         template<typename... ARGS, 
-        typename = std::enable_if_t<(sizeof...(ARGS)<=Max_Size) 
+        typename = std::enable_if_t<(sizeof...(ARGS)<=N) 
         && (std::conjunction_v<std::is_convertible<ARGS, T>...>)>>
         fixed_list(ARGS&&... args): _array(args...), _size(sizeof...(ARGS)) {}
 
@@ -404,7 +431,7 @@ namespace mxlib
         }
 
         void add(const T& value_) {
-            assert(_size <= Max_Size);
+            assert(_size <= N);
             _array[_size] = value_;
             ++_size;
         }
@@ -416,7 +443,7 @@ namespace mxlib
 
         void remove(uint32_t i) {
             assert(i < _size);
-            for (int j = i; i < Max_Size - 1; ++i) {
+            for (int j = i; i < N - 1; ++i) {
                 _array[i] = _array[i + 1]; 
             }
             --_size;
@@ -428,17 +455,45 @@ namespace mxlib
 
         uint32_t size() const {  return _size; }
 
+        T*       back() { return _size > 0 ? &_array[_size-1] : nullptr; }
+        
+        const T* back() const { return _size > 0 ? &_array[_size-1] : nullptr; }
+
         T*       data() { return &_array[0]; }
         
         const T* data() const { return &_array[0]; }
 
     private:
 
-        T _array[Max_Size]{};
+        T _array[N]{};
         
         uint32_t 
         _size = 0;
     };
+}
+
+template<typename T, typename>
+bool mxlib::any(T bitmask)
+{
+    return bitmask > 0;
+}
+
+template<typename T, typename>
+bool mxlib::all(T bitmask)
+{
+    return ~bitmask == 0;
+}
+
+template<typename T, typename>
+bool mxlib::contains(T mask_a, T mask_b)
+{
+    return (mask_a & mask_b) == mask_b;
+}
+
+template<typename T, typename>
+T mxlib::combine(T mask_a, T mask_b) 
+{
+    return mask_a | mask_b;
 }
 
 template<typename T>
