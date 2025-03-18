@@ -122,7 +122,7 @@ namespace mxlib {
         template <typename... ARGS, typename = std::enable_if_t<
                                         (sizeof...(ARGS) <= D) &&
                                         (std::conjunction_v<std::is_convertible<ARGS, T>...>)>>
-        vector_t(ARGS&&... args) : _v({args...}) {}
+        vector_t(ARGS&&... args) : _v(args...) {}
 
         explicit vector_t(T* array_) { std::memcpy(data(), array_, sizeof(T) * D); }
 
@@ -179,7 +179,7 @@ namespace mxlib {
         template <typename... ARGS, typename = std::enable_if_t<
                                         (sizeof...(ARGS) <= D0 * D1) &&
                                         (std::conjunction_v<std::is_convertible<ARGS, T>...>)>>
-        matrix_t(ARGS&&... args) : _m({args...}) {}
+        matrix_t(ARGS&&... args) : _m(args...) {}
 
         T& operator[](uint32_t i);
 
@@ -378,7 +378,7 @@ namespace mxlib {
         template <typename... ARGS, typename = std::enable_if_t<
                                         (sizeof...(ARGS) <= N) &&
                                         (std::conjunction_v<std::is_convertible<ARGS, T>...>)>>
-        fixed_list(ARGS&&... args) : _array({args...}), _size(sizeof...(ARGS)) {}
+        fixed_list(ARGS&&... args) : _array(args...), _size(sizeof...(ARGS)) {}
 
         fixed_list(const fixed_list& other_) { *this = other_; }
 
@@ -523,18 +523,18 @@ namespace mxlib {
     template <typename T, typename> T combine(T mask_a, T mask_b) { return mask_a | mask_b; }
 
     template <typename T> xmtx4x4<T> matrix_identity() {
-        return {1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+        return {T(1.0), T(0.0), T(0.0), T(0.0), T(0.0), T(1.0), T(0.0), T(0.0),
+                T(0.0), T(0.0), T(1.0), T(0.0), T(0.0), T(0.0), T(0.0), T(1.0)};
     }
 
     template <typename T> xmtx4x4<T> matrix_translation(const xvec3<T>& position_) {
-        return {1.0f, 0.0f, 0.0f, position_[0], 0.0f, 1.0f, 0.0f, position_[1],
-                0.0f, 0.0f, 1.0f, position_[2], 0.0f, 0.0f, 0.0f, 1.0f};
+        return {T(1.0), T(0.0), T(0.0), position_[0], T(0.0), T(1.0), T(0.0), position_[1],
+                T(0.0), T(0.0), T(1.0), position_[2], T(0.0), T(0.0), T(0.0), T(1.0)};
     }
 
     template <typename T> xmtx4x4<T> matrix_scale(const xvec3<T>& scale_) {
-        return {scale_[0], 0.0f, 0.0f,      0.0f, 0.0f, scale_[1], 0.0f, 0.0f,
-                0.0f,      0.0f, scale_[2], 0.0f, 0.0f, 0.0f,      0.0f, 1.0f};
+        return {scale_[0], T(0.0), T(0.0),      T(0.0), T(0.0), scale_[1], T(0.0), T(0.0),
+                T(0.0),      T(0.0), scale_[2], T(0.0), T(0.0), T(0.0),  T(0.0), T(1.0)};
     }
 
     template <typename T> xmtx4x4<T> matrix_rotation(const xquat<T>& rot_) {
